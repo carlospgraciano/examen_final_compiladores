@@ -1,0 +1,38 @@
+package analizador;
+
+import java_cup.runtime.Symbol;
+
+parser code
+{:
+	private Symbol s;
+	
+	public void syntax_error(Symbol s){
+		this.s = s;
+	}
+	
+	public Symbol getS(){
+		return this.s;
+	}
+	
+:};
+
+terminal Tab, Literal, Salto_Linea, ERROR;
+terminal String Calificacion;
+non terminal INICIO, SENTENCIA, LISTA_SENTENCIA;
+
+start with INICIO;
+
+INICIO ::= LISTA_SENTENCIA
+;
+LISTA_SENTENCIA ::= SENTENCIA |
+					SENTENCIA Salto_Linea SENTENCIA |
+					SENTENCIA Salto_Linea SENTENCIA Salto_Linea SENTENCIA |
+					SENTENCIA Salto_Linea SENTENCIA Salto_Linea SENTENCIA Salto_Linea SENTENCIA |
+					SENTENCIA Salto_Linea SENTENCIA Salto_Linea SENTENCIA Salto_Linea SENTENCIA Salto_Linea SENTENCIA
+;
+SENTENCIA ::= Calificacion:cal Tab Literal {: 
+		if ( (Float.parseFloat(cal) < new Float(0)) && (Float.parseFloat(cal) > new Float(100)) ) {
+			parser.report_error("Numero no valido (mayor a 100 o menor a 0)", null);
+		}
+:}
+;
